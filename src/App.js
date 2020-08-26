@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react'
+import Header from './components/Header'
+import Input from './components/Input'
+import Note from './components/Note'
+import { bake_cookie, read_cookie, delete_cookie } from 'sfcookies'
 
-function App() {
+const cookie_key = 'NOTES';
+
+const App = () => {
+
+  const [state, setState] = useState([])
+
+  useEffect(() => {
+    setState(read_cookie(cookie_key))
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <React.Fragment>
+      <Header />
+      <main>
+        <Input state={state} setState={setState} bake_cookie={bake_cookie} cookie_key={cookie_key} />
+        {state.map((note, i) => {
+          return <Note note={note} key={i} />
+        })}
+
+        <hr />
+        <div className='clear-btn'>
+          <button onClick={() => {
+            setState(delete_cookie(cookie_key))
+            setState([])
+          }}>Clear Notes</button>
+        </div>
+
+      </main>
+    </React.Fragment>
+  )
 }
 
-export default App;
+export default App
